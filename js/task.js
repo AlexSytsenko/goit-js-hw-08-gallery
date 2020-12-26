@@ -6,28 +6,29 @@ const imageModalRef = document.querySelector(".lightbox__image");
 const closeModalBtn = document.querySelector('button[data-action="close-lightbox"]');
 const backdropRef = document.querySelector(".lightbox__overlay");
 
-const marcup = gallery.map(({ preview, original, description }) => creatGalleryItem(preview, original, description));
+const marcup = gallery.map(({ preview, original, description }, index) => creatGalleryItem(preview, original, description, index));
 
-function creatGalleryItem(preview, original, description) {
+function creatGalleryItem(preview, original, description, index) {
   const galleryItem = document.createElement("li");
+  const galleryLink = document.createElement("a");
+  const galleryImage = document.createElement("img");
+
   galleryItem.classList.add("gallery__item");
 
-  const galleryLink = document.createElement("a");
   galleryLink.classList.add("gallery__link");
   galleryLink.setAttribute("href", original);
 
-  const galleryImage = document.createElement("img");
   galleryImage.classList.add("gallery__image");
   galleryImage.setAttribute("src", preview);
   galleryImage.setAttribute("data-source", original);
   galleryImage.setAttribute("alt", description);
+  galleryImage.setAttribute("data-index", index);
 
   galleryItem.appendChild(galleryLink);
   galleryLink.appendChild(galleryImage);
 
   return galleryItem;
 }
-
 galleryRef.append(...marcup);
 
 function onGalleryClick(event) {
@@ -36,21 +37,20 @@ function onGalleryClick(event) {
   if (event.target.nodeName !== "IMG") {
     return;
   }
-
   onOpenModal();
 
   const imageRef = event.target;
   const largeImageURL = imageRef.dataset.source;
-  const altImage = imageRef.dataset.alt;
+  const largeImageAlt = imageRef.alt;
+  const largeImageIndex = imageRef.dataset.index;
 
   setLargeImageURL(largeImageURL);
-  setLargeImageDescription(altImage);
-
-  console.log(largeImageURL);
+  setLargeImageDescription(largeImageAlt);
+  setLargeImageIndex(largeImageIndex);
 }
 
 function onOpenModal() {
-  window.addEventListener("keydown", onPressEscape);
+  window.addEventListener("keydown", onPressBtn);
   modalRef.classList.add("is-open");
 }
 
@@ -62,8 +62,12 @@ function setLargeImageDescription(description) {
   imageModalRef.alt = description;
 }
 
+function setLargeImageIndex(index) {
+  imageModalRef.setAttribute("data-index", index);
+}
+
 function onCloseModal() {
-  window.removeEventListener("keydown", onPressEscape);
+  window.removeEventListener("keydown", onPressBtn);
   modalRef.classList.remove("is-open");
   clearLargeImageURL();
   clearLargeImageDescription();
@@ -83,14 +87,42 @@ function onBackdropClick(event) {
   }
 }
 
-function onPressEscape(event) {
+function onPressBtn(event) {
   if (event.code === "Escape") {
     onCloseModal();
   }
+  onTurnOutGallery();
 }
 
+function onTurnOutGallery() {
+  const index = Number(imageModalRef.dataset.index);
+
+  if (event.code === "ArrowLeft") {
+    if (index === 0) {
+      return;
+    }
+    const nextIndex = index - 1;
+    const newItemURL = gallery[nextIndex].original;
+    const newItemAlt = gallery[nextIndex].description;
+
+    setLargeImageURL(newItemURL);
+    setLargeImageDescription(newItemAlt);
+    setLargeImageIndex(nextIndex);
+  }
+  if (event.code === "ArrowRight") {
+    if (index === gallery.length - 1) {
+      return;
+    }
+    const nextIndex = index + 1;
+    const newItemURL = gallery[nextIndex].original;
+    const newItemAlt = gallery[nextIndex].description;
+
+    setLargeImageURL(newItemURL);
+    setLargeImageDescription(newItemAlt);
+    setLargeImageIndex(nextIndex);
+  }
+}
 //========== Слушатели!
 galleryRef.addEventListener("click", onGalleryClick);
 closeModalBtn.addEventListener("click", onCloseModal);
 backdropRef.addEventListener("click", onBackdropClick);
-
