@@ -96,32 +96,49 @@ function onPressBtn(event) {
 
 function onTurnOutGallery() {
   const index = Number(imageModalRef.dataset.index);
+  let nextIndex;
 
-  if (event.code === "ArrowLeft") {
-    if (index === 0) {
-      return;
-    }
-    const nextIndex = index - 1;
-    const newItemURL = gallery[nextIndex].original;
-    const newItemAlt = gallery[nextIndex].description;
-
-    setLargeImageURL(newItemURL);
-    setLargeImageDescription(newItemAlt);
-    setLargeImageIndex(nextIndex);
+  if (event.code === "ArrowLeft" && index !== 0) {
+    nextIndex = index - 1;
   }
-  if (event.code === "ArrowRight") {
-    if (index === gallery.length - 1) {
-      return;
-    }
-    const nextIndex = index + 1;
+  if (event.code === "ArrowRight" && index !== gallery.length - 1) {
+    nextIndex = index + 1;
+  }
+  if (nextIndex || nextIndex === 0) {
     const newItemURL = gallery[nextIndex].original;
     const newItemAlt = gallery[nextIndex].description;
+
+    console.log(nextIndex);
 
     setLargeImageURL(newItemURL);
     setLargeImageDescription(newItemAlt);
     setLargeImageIndex(nextIndex);
   }
 }
+
+// function onTurnOutGallery() {  // Другой вариант. до рекомендации ментора...
+//   const index = Number(imageModalRef.dataset.index);
+
+//   if (event.code === "ArrowLeft" && index !== 0) {
+
+//     const nextIndex = index - 1;
+//     const newItemURL = gallery[nextIndex].original;
+//     const newItemAlt = gallery[nextIndex].description;
+
+//     setLargeImageURL(newItemURL);
+//     setLargeImageDescription(newItemAlt);
+//     setLargeImageIndex(nextIndex);
+//   }
+//   if (event.code === "ArrowRight" && index !== gallery.length - 1) {
+//     const nextIndex = index + 1;
+//     const newItemURL = gallery[nextIndex].original;
+//     const newItemAlt = gallery[nextIndex].description;
+
+//     setLargeImageURL(newItemURL);
+//     setLargeImageDescription(newItemAlt);
+//     setLargeImageIndex(nextIndex);
+//   }
+// }
 //========== Слушатели!
 galleryRef.addEventListener("click", onGalleryClick);
 closeModalBtn.addEventListener("click", onCloseModal);
